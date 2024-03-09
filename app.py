@@ -37,7 +37,7 @@ image_paths = [
     "/Users/cbn/Downloads/chase statement 2.jpeg",
     "/Users/cbn/Downloads/chase_5.png",
     "/Users/cbn/Downloads/chase_4.jpeg",
-    "/Users/cbn/Downloads/chase_3.png",
+    "/Users/cbn/Downloads/chase_3_masked_data.png",
 ]
 
 start_time = time.time()
@@ -52,4 +52,3 @@ execution_time = end_time - start_time
 json_data = json.dumps(data, indent=4)
 print(json_data)
 print(f"Execution time: {round(execution_time, 2)} seconds")
-
