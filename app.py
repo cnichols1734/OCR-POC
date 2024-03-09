@@ -2,35 +2,44 @@ import easyocr
 import json
 import re
 
+def extract_account_number(image_path):
+    result = reader.readtext(image_path)
+    extracted_text = ""
+    for detection in result:
+        text = detection[1]
+        extracted_text += text + "\n"
+    account_number_match = re.search(r'(?:Account Number|Credit Card)[\s:]*([\d\s]+)', extracted_text, re.IGNORECASE)
+    return account_number_match.group(1).replace(" ", "").strip() if account_number_match else None
+
+def process_files(file_paths):
+    if isinstance(file_paths, str):
+        file_paths = [file_paths]  # Convert to list if only one file path is provided
+    data = {}
+    for file_path in file_paths:
+        account_number = extract_account_number(file_path)
+        data[file_path] = {'account_number': account_number}
+    return data
+
+# Create a reader object with English as the language option
 reader = easyocr.Reader(['en'])
 
-# Read the image file
-image_path = '/Users/cbn/Downloads/chasecc1.png'
-result = reader.readtext(image_path)
+# Example usage with a single file
+# image_paths = '/Users/cbn/Downloads/chase_cc_1.png'
 
-extracted_text = ""
+# Example usage with multiple files
+image_paths = [
+    '/Users/cbn/Downloads/chase_cc_1.png',
+    '/Users/cbn/Downloads/chase_6.png',
+    '/Users/cbn/Downloads/chase_5.png',
+    '/Users/cbn/Downloads/chase_4.jpeg',
+    '/Users/cbn/Downloads/chase_3.png',
+    # Add more file paths as needed
+]
 
-# Iterate over the OCR result and append to the string
-for detection in result:
-    text = detection[1]
-    extracted_text += text + "\n"
+# Process the files and get the data
+data = process_files(image_paths)
 
-# Output the entire block of text for verification
-print("Extracted Text:")
-print(extracted_text)
-
-# Modify the regex to search for 'Account Number' or 'Credit Card' followed by digits.
-account_number_match = re.search(r'(?:Account Number|Credit Card)[\s:]*([\d\s]+)', extracted_text, re.IGNORECASE)
-
-# If we find a match extract the data
-account_number = account_number_match.group(1).replace(" ", "").strip() if account_number_match else None
-
-# Create a JSON object with the data
-data = {
-    'account_number': account_number
-}
-
-# print all extracted data
+# Convert to a JSON string and print
 json_data = json.dumps(data, indent=4)
 print("Extracted Data in JSON:")
 print(json_data)
